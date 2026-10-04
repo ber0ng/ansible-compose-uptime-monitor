@@ -13,10 +13,11 @@ from db import pool
 
 TICK_SECONDS = int(os.getenv("TICK_SECONDS", "10"))
 TIMEOUT_SECONDS = float(os.getenv("CHECK_TIMEOUT_SECONDS", "10"))
-HEARTBEAT = Path("/tmp/heartbeat")  # touched each healthy loop; used by the container healthcheck
+HEARTBEAT = Path("/tmp/worker_heartbeat")  # touched each healthy loop; used by the container healthcheck
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("worker")
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 stop = threading.Event()
 

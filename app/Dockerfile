@@ -18,8 +18,8 @@ USER appuser
 
 EXPOSE 8080
 
-# api health check 
-HEALTHCHECK --interval=15s --timeout=3s --start-period=10s --retries= \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"
+# api health check
+HEALTHCHECK --interval=15s --timeout=3s --start-period=10s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/healthz')"
 
-CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8080"]
