@@ -1,4 +1,38 @@
+# ---------- Terraform ----------
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.tfstate.lock.info
+crash.log
+crash.*.log
+*.tfvars
+!*.tfvars.example
+backend.hcl
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+# NOTE: .terraform.lock.hcl is NOT ignored on purpose; commit it
+
+# ---------- Secrets / env ----------
 .env
+!.env.example
+*.pem
+*.key
+.vault_pass*
+vault-password*
+
+# ---------- Ansible ----------
+*.retry
+
+# ---------- Python ----------
 __pycache__/
 *.pyc
 .venv/
+venv/
+
+# ---------- Editor / OS ----------
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
