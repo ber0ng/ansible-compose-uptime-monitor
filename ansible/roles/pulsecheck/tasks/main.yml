@@ -1,0 +1,58 @@
+- name: Create app folder
+  ansible.builtin.file:
+    path: "{{ pulsecheck_dir }}"
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: "0755"
+
+- name: Copy app code to the server
+  become: false
+  ansible.posix.synchronize:
+    src: "{{ playbook_dir }}/../"
+    dest: "{{ pulsecheck_dir }}/"
+    rsync_opts:
+      - "--chmod=D755,F644"
+      - "--exclude=.git"
+      - "--exclude=.venv"
+      - "--exclude=.env"
+      - "--exclude=compose.prod.yaml"
+      - "--exclude=terraform"
+      - "--exclude=ansible"
+      - "--exclude=__pycache__"
+
+- name: Write .env from vars + vault
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ pulsecheck_dir }}/.env"
+    owner: ubuntu
+    group: ubuntu
+    mode: "0600"
+
+- name: Write production compose override
+  ansible.builtin.template:
+    src: compose.prod.yaml.j2
+    dest: "{{ pulsecheck_dir }}/compose.prod.yaml"
+    owner: ubuntu
+    group: ubuntu
+    mode: "0644"
+
+- name: Build and start the stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ pulsecheck_dir }}"
+    files:
+      - compose.yaml
+      - compose.prod.yaml
+    build: always
+    state: present
+    wait: true
+    wait_timeout: 600
+
+- name: Check the app answers through nginx
+  ansible.builtin.uri:
+    url: http://localhost/docs
+    status_code: 200
+  register: health
+  retries: 10
+  delay: 6
+  until: health.status == 200

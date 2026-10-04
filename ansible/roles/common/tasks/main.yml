@@ -1,0 +1,41 @@
+- name: Update apt cache and upgrade packages
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: safe
+    cache_valid_time: 3600
+
+- name: Install base packages
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - rsync
+      - ufw
+      - fail2ban
+      - unattended-upgrades
+    state: present
+
+# t3.micro only has 1gb ram, swwap helps when docker builds the images
+- name: Create a swap file
+  ansible.builtin.command: fallocate -l {{ swap_size }} /swapfile
+  args:
+    creates: /swapfile
+  register: swap_file
+
+- name: Set swap file permissions
+  ansible.builtin.file:
+    path: /swapfile
+    mode: "0600"
+
+- name: Format swap file
+  ansible.builtin.command: mkswap /swapfile
+  when: swap_file.changed
+
+- name: Turn swap on
+  ansible.builtin.command: swapon /swapfile
+  when: swap_file.changed
+
+- name: Keep swap on after reboot
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    line: /swapfile none swap sw 0 0

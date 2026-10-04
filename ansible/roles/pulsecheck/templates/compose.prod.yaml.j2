@@ -1,0 +1,5 @@
+# managed by ansible. on the server, nginx listens on port 80 instead of 8080
+services:
+    nginx:
+        ports: !override
+            - "80:80"

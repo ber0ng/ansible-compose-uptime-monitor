@@ -1,0 +1,8 @@
+- name: Configure and deploy pulsecheck
+  hosts: pulsecheck
+  become: true
+  roles:
+    - common
+    - hardening
+    - docker
+    - pulsecheck

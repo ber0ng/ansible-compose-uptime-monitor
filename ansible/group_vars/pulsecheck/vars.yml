@@ -1,0 +1,9 @@
+pulsecheck_dir: /opt/pulsecheck
+swap_size: 2G
+
+# becomes the .env files on the server
+# use the same keys as your .env.example
+pulsecheck_env:
+  POSTGRES_DB: pulsecheck
+  POSTGRES_USER: pulsecheck
+  POSTGRES_PASSWORD: change-me
